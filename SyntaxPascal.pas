@@ -1,128 +1,63 @@
 unit SyntaxPascal;
 
 interface
-procedure PrintPascalSyntaxHighlighting(line: string);
 
-implementation
-uses crt, SysUtils;
+uses
+  SysUtils, Classes;
 
 const
-  PascalKeywords: array[0..14] of string = (
-    'program', 'begin', 'end', 'var', 'const', 
-    'procedure', 'function', 'uses', 'if', 'then', 
-    'else', 'while', 'for', 'repeat', 'until'
+  PascalKeywords: array[0..24] of string = (
+    'begin', 'end', 'if', 'then', 'else', 'while', 'do', 'for', 'to', 'downto', 
+    'repeat', 'until', 'case', 'of', 'var', 'const', 'type', 'function', 'procedure', 
+    'record', 'object', 'class', 'interface', 'implementation', 'uses'
   );
 
-  PascalOperators: array[0..5] of string = ('+', '-', ':=', '=', '<>', '*');
+  PascalDataTypes: array[0..5] of string = (
+    'integer', 'real', 'char', 'boolean', 'string', 'array'
+  );
 
-  PascalDelimiters: array[0..5] of string = (';', ':', '.', '(', ')', ',');
+procedure HighlightPascalSyntax(const Line: string; var HighlightedLine: string);
 
-procedure PrintPascalSyntaxHighlighting(line: string);
+implementation
+
+procedure HighlightPascalSyntax(const Line: string; var HighlightedLine: string);
 var
-  i, j: Integer;
-  word: string;
-  isKeyword, isOperator, isDelimiter, isComment: Boolean;
+  Word: string;
+  i: Integer;
 begin
-  i := 1;
-  isComment := False;
-
-  while i <= Length(line) do
+  HighlightedLine := '';
+  Word := '';
+  
+  for i := 1 to Length(Line) do
   begin
-    word := '';
-
-    // Handle comments (single-line // and multi-line (* ... *))
-    if (i < Length(line) - 1) and ((line[i] = '/') and (line[i + 1] = '/')) then
+    if Line[i] in ['a'..'z', 'A'..'Z', '_'] then
+      Word := Word + Line[i]
+    else
     begin
-      TextColor(DarkGray);
-      Write(Copy(line, i, Length(line) - i + 1));
-      TextColor(White);
-      Break; // Everything after // is a comment
+      // Check if the word is a keyword
+      if (Word in PascalKeywords) then
+        HighlightedLine := HighlightedLine + '[Keyword]' + Word + '[/Keyword]'
+      else if (Word in PascalDataTypes) then
+        HighlightedLine := HighlightedLine + '[DataType]' + Word + '[/DataType]'
+      else
+        HighlightedLine := HighlightedLine + Word;
+
+      // Reset the word and add the non-word character
+      Word := '';
+      HighlightedLine := HighlightedLine + Line[i];
     end;
-
-    if (i < Length(line) - 1) and ((line[i] = '(') and (line[i + 1] = '*')) then
-    begin
-      TextColor(DarkGray);
-      Write('(*');
-      i := i + 2;
-      isComment := True;
-    end;
-
-    if isComment then
-    begin
-      while (i <= Length(line)) do
-      begin
-        Write(line[i]);
-        if (i > 1) and (line[i - 1] = '*') and (line[i] = ')') then
-        begin
-          isComment := False;
-          Break;
-        end;
-        Inc(i);
-      end;
-      TextColor(White);
-      Continue;
-    end;
-
-    // Extract words or symbols
-    while (i <= Length(line)) and not (line[i] in [' ', ';', ':', '.', '(', ')', ',']) do
-    begin
-      word := word + line[i];
-      Inc(i);
-    end;
-
-    // Check if it's a Pascal keyword
-    isKeyword := False;
-    for j := 0 to High(PascalKeywords) do
-      if CompareText(word, PascalKeywords[j]) = 0 then
-      begin
-        TextColor(LightCyan);
-        Write(word);
-        TextColor(White);
-        isKeyword := True;
-        Break;
-      end;
-
-    // Check if it's an operator
-    isOperator := False;
-    for j := 0 to High(PascalOperators) do
-      if word = PascalOperators[j] then
-      begin
-        TextColor(Yellow);
-        Write(word);
-        TextColor(White);
-        isOperator := True;
-        Break;
-      end;
-
-    // Check if it's a delimiter
-    isDelimiter := False;
-    for j := 0 to High(PascalDelimiters) do
-      if word = PascalDelimiters[j] then
-      begin
-        TextColor(LightRed);
-        Write(word);
-        TextColor(White);
-        isDelimiter := True;
-        Break;
-      end;
-
-    // If it's not a keyword, operator, or delimiter, print normally
-    if not (isKeyword or isOperator or isDelimiter) then
-      Write(word);
-
-    // Print spaces and delimiters
-    if (i <= Length(line)) and (line[i] in [';', ':', '.', '(', ')', ',']) then
-    begin
-      TextColor(LightRed);
-      Write(line[i]);
-      TextColor(White);
-      Inc(i);
-    end;
-
-    Write(' '); // Maintain spacing
-    Inc(i);
   end;
-  WriteLn;
+
+  // Final check for any word left at the end
+  if Word <> '' then
+  begin
+    if (Word in PascalKeywords) then
+      HighlightedLine := HighlightedLine + '[Keyword]' + Word + '[/Keyword]'
+    else if (Word in PascalDataTypes) then
+      HighlightedLine := HighlightedLine + '[DataType]' + Word + '[/DataType]'
+    else
+      HighlightedLine := HighlightedLine + Word;
+  end;
 end;
 
 end.
