@@ -34,19 +34,19 @@ Running on a **lightweight Pascal compiler**, this editor is perfect for **low-r
 You'll need **Free Pascal Compiler (FPC)** installed.  
 
 #### **Debian/Ubuntu:**  
-```sh
+```bash
 sudo apt install fpc
 
 #### **arch/manjaro/endeavourOS:**
-```sh 
+```bash 
 sudo pacman -S fpc
 
 #### **alpine linux:**
-```sh
+```bash
 sudo apk add fpc
 
 #### **gentoo:**
-```sh
+```bash
 sudo emerge dev-lang/fpc
 
 
