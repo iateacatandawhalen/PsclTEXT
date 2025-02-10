@@ -1,65 +1,64 @@
 unit SyntaxPython;
 
 interface
-procedure PrintPythonSyntaxHighlighting(line: string);
 
-implementation
-uses crt, SysUtils;
+uses
+  SysUtils, Classes;
 
 const
-  PythonKeywords: array[0..9] of string =
-    ('def', 'return', 'if', 'else', 'elif', 'for', 'while', 'import', 'from', 'class');
+  PythonKeywords: array[0..33] of string = (
+    'False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',
+    'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global',
+    'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return',
+    'try', 'while', 'with', 'yield'
+  );
 
-  BuiltInFunctions: array[0..5] of string = ('print', 'len', 'int', 'str', 'float', 'range');
+  PythonDataTypes: array[0..4] of string = (
+    'int', 'str', 'float', 'bool', 'list'
+  );
 
-procedure PrintPythonSyntaxHighlighting(line: string);
+procedure HighlightPythonSyntax(const Line: string; var HighlightedLine: string);
+
+implementation
+
+procedure HighlightPythonSyntax(const Line: string; var HighlightedLine: string);
 var
-  i, j: Integer;
-  word: string;
-  isKeyword, isBuiltIn: Boolean;
+  Word: string;
+  i: Integer;
 begin
-  i := 1;
-  while i <= Length(line) do
+  HighlightedLine := '';
+  Word := '';
+  
+  for i := 1 to Length(Line) do
   begin
-    word := '';
-    
-    while (i <= Length(line)) and (line[i] <> ' ') do
+    if Line[i] in ['a'..'z', 'A'..'Z', '_'] then
+      Word := Word + Line[i]
+    else
     begin
-      word := word + line[i];
-      Inc(i);
+      // Check if the word is a keyword
+      if (Word in PythonKeywords) then
+        HighlightedLine := HighlightedLine + '[Keyword]' + Word + '[/Keyword]'
+      else if (Word in PythonDataTypes) then
+        HighlightedLine := HighlightedLine + '[DataType]' + Word + '[/DataType]'
+      else
+        HighlightedLine := HighlightedLine + Word;
+
+      // Reset the word and add the non-word character
+      Word := '';
+      HighlightedLine := HighlightedLine + Line[i];
     end;
-
-    isKeyword := False;
-    isBuiltIn := False;
-    
-    for j := 0 to High(PythonKeywords) do
-      if word = PythonKeywords[j] then
-      begin
-        TextColor(LightMagenta);
-        Write(word);
-        TextColor(White);
-        isKeyword := True;
-        Break;
-      end;
-
-    if not isKeyword then
-      for j := 0 to High(BuiltInFunctions) do
-        if word = BuiltInFunctions[j] then
-        begin
-          TextColor(LightGreen);
-          Write(word);
-          TextColor(White);
-          isBuiltIn := True;
-          Break;
-        end;
-
-    if not isKeyword and not isBuiltIn then
-      Write(word);
-    
-    Write(' ');
-    Inc(i);
   end;
-  WriteLn;
+
+  // Final check for any word left at the end
+  if Word <> '' then
+  begin
+    if (Word in PythonKeywords) then
+      HighlightedLine := HighlightedLine + '[Keyword]' + Word + '[/Keyword]'
+    else if (Word in PythonDataTypes) then
+      HighlightedLine := HighlightedLine + '[DataType]' + Word + '[/DataType]'
+    else
+      HighlightedLine := HighlightedLine + Word;
+  end;
 end;
 
 end.
