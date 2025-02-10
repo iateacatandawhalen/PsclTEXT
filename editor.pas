@@ -47,7 +47,7 @@ end;
 procedure TEditor.HighlightLine(const Line: string; var HighlightedLine: string; const FileExtension: string);
 begin
   if FileExtension = '.c' then
-    SyntaxC.HighlightSyntax(Line, HighlightedLine)
+    SyntaxC.HighlightCSyntax(Line, HighlightedLine)
   else if FileExtension = '.py' then
     SyntaxPython.HighlightPythonSyntax(Line, HighlightedLine)
   else if FileExtension = '.md' then
