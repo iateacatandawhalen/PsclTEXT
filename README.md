@@ -36,12 +36,15 @@ You'll need **Free Pascal Compiler (FPC)** installed.
 #### **Debian/Ubuntu:**  
 ```sh
 sudo apt install fpc
+
 #### **arch/manjaro/endeavourOS:**
 ```sh 
 sudo pacman -S fpc
+
 #### **alpine linux:**
 ```sh
 sudo apk add fpc
+
 #### **gentoo:**
 ```sh
 sudo emerge dev-lang/fpc
